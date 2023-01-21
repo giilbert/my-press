@@ -1,7 +1,9 @@
+import { Permission } from "@prisma/client";
 import { z } from "zod";
 import { createPostSchema } from "../../../shared/schemas/post";
 import {
   createTRPCRouter,
+  protectedProcedure,
   streamAdminProcedure,
   streamMemberProcedure,
 } from "../trpc";
@@ -36,6 +38,48 @@ export const postRouter = createTRPCRouter({
           userStatus: {
             where: {
               userId: ctx.user.id,
+            },
+          },
+        },
+        cursor: input.cursor
+          ? {
+              id: input.cursor,
+            }
+          : undefined,
+        take: TAKE + 1,
+      });
+
+      let nextCursor: string | undefined = undefined;
+      if (posts.length > TAKE) {
+        const nextItem = posts.pop();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nextCursor = nextItem!.id;
+      }
+
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+
+  listAll: protectedProcedure
+    .input(
+      z.object({
+        cursor: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const TAKE = 25;
+
+      const posts = await ctx.prisma.streamPost.findMany({
+        // probably slow dooo doo doo doooo..
+        where: {
+          stream: {
+            members: {
+              some: {
+                userId: ctx.user.id,
+                permission: Permission.MEMBER,
+              },
             },
           },
         },

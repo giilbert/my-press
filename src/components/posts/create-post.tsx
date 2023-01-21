@@ -1,4 +1,4 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Heading } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
 import { createPostSchema } from "../../shared/schemas/post";
@@ -21,7 +21,8 @@ export const CreatePost: React.FC = () => {
   });
 
   return (
-    <Box>
+    <Box mb="4">
+      <Heading>Create Post</Heading>
       <TsForm
         schema={createPostSchema}
         form={form}
