@@ -1,7 +1,8 @@
+import { Text } from "@chakra-ui/react";
 import { type NextPage } from "next";
 
 const Home: NextPage = () => {
-  return <p>sdsad</p>;
+  return <Text>sdsad</Text>;
 };
 
 export default Home;
