@@ -4,6 +4,17 @@ import { createStreamSchema } from "../../../shared/schemas/stream";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const streamRouter = createTRPCRouter({
+  getJoinedStreams: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.stream.findMany({
+      where: {
+        members: {
+          some: {
+            userId: ctx.user.id,
+          },
+        },
+      },
+    });
+  }),
   create: protectedProcedure
     .input(createStreamSchema)
     .mutation(async ({ ctx, input }) => {

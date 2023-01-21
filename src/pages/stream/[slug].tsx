@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react";
-import { NextPage } from "next";
+import type { NextPage } from "next";
 
 const StreamPage: NextPage = () => {
   return <Text>Stream page</Text>;

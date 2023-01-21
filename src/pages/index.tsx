@@ -1,46 +1,23 @@
-import { Box, Button, Text, VStack } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardHeader, Text } from "@chakra-ui/react";
 import { type NextPage } from "next";
-import { useRouter } from "next/router";
-import { TsForm } from "../components/forms/ts-form";
-import { createStreamSchema } from "../shared/schemas/stream";
-import { noop } from "../utils/noop";
+import Link from "next/link";
+import { CreateStream } from "../components/streams/create-stream";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  const router = useRouter();
-  const createStream = trpc.stream.create.useMutation();
+  const joinedStreamQuery = trpc.stream.getJoinedStreams.useQuery();
 
   return (
-    <Box>
-      <VStack p="4" gap="2" w="full" alignItems="flex-start">
-        <TsForm
-          formProps={{
-            style: {
-              width: "100%",
-            },
-          }}
-          onSubmit={(data) => {
-            createStream
-              .mutateAsync(data)
-              .then(async () => {
-                await router.push(`/stream/${data.slug}`);
-              })
-              .catch(noop);
-          }}
-          schema={createStreamSchema}
-          renderAfter={() => (
-            <Button type="submit" isLoading={createStream.isLoading} mt="4">
-              Submit
-            </Button>
-          )}
-          props={{
-            name: { label: "Name" },
-            slug: { label: "Slug" },
-          }}
-        />
-
-        <Text color="red.400">{createStream.error?.message}</Text>
-      </VStack>
+    <Box p="4">
+      <CreateStream />
+      {joinedStreamQuery.data?.map((stream) => (
+        <Link key={stream.id} href={`/stream/${stream.slug}`}>
+          <Box border="solid #aaa 1px" mt="2" p="2" borderRadius="md">
+            <Text>HELLO DESIGN ME</Text>
+            <Text>Name: {stream.name}</Text>
+          </Box>
+        </Link>
+      ))}
     </Box>
   );
 };
