@@ -12,6 +12,7 @@ import { useState } from "react";
 export const CreatePost: React.FC = () => {
   const stream = useStream();
   const createPost = trpc.post.create.useMutation();
+  const trpcContext = trpc.useContext();
   const [, forceRender] = useState<number>();
 
   const form = useForm<z.infer<typeof createPostSchema>>({
@@ -34,14 +35,18 @@ export const CreatePost: React.FC = () => {
               streamId: stream.id,
               ...data,
             })
-            .then(() => {
-              console.log(form);
+            .then(async () => {
               forceRender(0);
               form.reset();
+              await trpcContext.post.listOfStream.invalidate();
             })
             .catch(noop);
         }}
-        renderAfter={() => <Button type="submit">Submit</Button>}
+        renderAfter={() => (
+          <Button type="submit" isLoading={createPost.isLoading}>
+            Submit
+          </Button>
+        )}
       />
     </Box>
   );
