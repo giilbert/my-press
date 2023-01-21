@@ -10,6 +10,8 @@ datasource db {
 
 model Stream {
   id      String         @id @default(cuid())
+  slug    String         @unique
+  name    String
   posts   StreamPost[]
   members StreamMember[]
 }
@@ -31,8 +33,9 @@ model StreamPost {
 }
 
 model StreamMember {
-  userId   String
-  streamId String
+  userId     String
+  streamId   String
+  permission Permission
 
   user     User   @relation(fields: [userId], references: [id])
   stream   Stream @relation(fields: [streamId], references: [id])
@@ -52,6 +55,12 @@ model StreamPostOnUser {
 
   @@unique([userId, postId])
   @@index([postId])
+}
+
+enum Permission {
+  OWNER
+  ADMIN
+  MEMBER
 }
 
 model Account {
