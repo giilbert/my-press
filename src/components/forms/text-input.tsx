@@ -23,7 +23,6 @@ export const TextInput: React.FC<TextInputProps & FieldProps> = ({
   const state = useFormState({ name });
 
   const error = state.errors[name]?.message as string | undefined;
-  console.log(error);
 
   return (
     <FormControl isInvalid={!!error}>

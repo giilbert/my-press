@@ -1,16 +1,11 @@
 import { Permission } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { createStreamSchema } from "../../../shared/schemas/stream";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const streamRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(
-      z.object({
-        slug: z.string(),
-        name: z.string(),
-      })
-    )
+    .input(createStreamSchema)
     .mutation(async ({ ctx, input }) => {
       // check that a stream with that slug does not already exist
       const streamWithSlug = await ctx.prisma.stream.findUnique({
