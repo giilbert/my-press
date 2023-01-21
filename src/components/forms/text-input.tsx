@@ -4,34 +4,29 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  type InputProps,
 } from "@chakra-ui/react";
-import { useFormContext, useFormState } from "react-hook-form";
-import type { FieldProps } from "./lazy-form";
+import { useTsController } from "@ts-react/form";
 
-export type TextInputProps = InputProps & {
-  label?: string;
-};
+interface TextInputProps {
+  label: string;
+  description?: string;
+}
 
-export const TextInput: React.FC<TextInputProps & FieldProps> = ({
-  name,
-  description,
-  label,
-  ...rest
-}) => {
-  const form = useFormContext();
-  const state = useFormState({ name });
-
-  const error = state.errors[name]?.message as string | undefined;
+// if you put React.FC here it breaks
+export const TextInput = ({ label, description }: TextInputProps) => {
+  const { field, error } = useTsController<string>();
 
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel>{label}</FormLabel>
-      <Input {...rest} {...form.register(name)} />
+      <Input
+        value={field.value}
+        onChange={(e) => field.onChange(e.target.value)}
+      />
       {!error ? (
         <FormHelperText>{description}</FormHelperText>
       ) : (
-        <FormErrorMessage>{error}</FormErrorMessage>
+        <FormErrorMessage>{error.errorMessage}</FormErrorMessage>
       )}
     </FormControl>
   );
