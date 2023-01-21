@@ -1,6 +1,6 @@
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { type NextPage } from "next";
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { AllPostList } from "../components/posts/all-list";
 import { CreateStream } from "../components/streams/create-stream";
@@ -8,10 +8,15 @@ import { trpc } from "../utils/api";
 
 const Home: NextPage = () => {
   const joinedStreamQuery = trpc.stream.getJoinedStreams.useQuery();
+  const { data: session } = useSession();
 
   return (
     <Box p="4">
-      <Button onClick={() => signIn("google")}>Sign in</Button>
+      {session ? (
+        <Button onClick={() => void signOut()}>Sign out</Button>
+      ) : (
+        <Button onClick={() => void signIn("google")}>Sign in</Button>
+      )}
       <CreateStream />
 
       <Heading mt="2">All the things</Heading>
