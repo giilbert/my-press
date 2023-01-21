@@ -67,6 +67,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { z } from "zod";
+import type { PrismaClient } from "@prisma/client";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -125,24 +126,60 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
+// TODO: test?
+const enforceStreamMember = async (
+  prisma: PrismaClient,
+  userId: string,
+  streamId: string
+) => {
+  const member = await prisma.streamMember.findUnique({
+    where: {
+      userId_streamId: {
+        userId,
+        streamId,
+      },
+    },
+    include: {
+      stream: true,
+    },
+  });
+
+  if (!member)
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not in this stream.",
+    });
+
+  return member;
+};
+
+export const streamMemberProcedure = t.procedure
+  .input(z.object({ streamId: z.string() }))
+  .use(enforceUserIsAuthed)
+  .use(async ({ ctx, next, input }) => {
+    const member = await enforceStreamMember(
+      ctx.prisma,
+      ctx.user.id,
+      input.streamId
+    );
+
+    return next({
+      ctx: {
+        ...ctx,
+        member,
+      },
+    });
+  });
+
 export const streamAdminProcedure = t.procedure
   .input(z.object({ streamId: z.string() }))
   .use(enforceUserIsAuthed)
   .use(async ({ ctx, next, input }) => {
-    const member = await ctx.prisma.streamMember.findUnique({
-      where: {
-        userId_streamId: {
-          userId: ctx.user.id,
-          streamId: input.streamId,
-        },
-      },
-    });
-
-    if (!member)
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "You are not in this stream.",
-      });
+    const member = await enforceStreamMember(
+      ctx.prisma,
+      ctx.user.id,
+      input.streamId
+    );
 
     if (member.permission === "MEMBER")
       throw new TRPCError({
@@ -151,6 +188,9 @@ export const streamAdminProcedure = t.procedure
       });
 
     return next({
-      ctx,
+      ctx: {
+        ...ctx,
+        member,
+      },
     });
   });
