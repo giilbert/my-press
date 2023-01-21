@@ -1,20 +1,16 @@
-import { z } from "zod";
+import { createPostSchema } from "../../../shared/schemas/post";
 import { createTRPCRouter, streamAdminProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
   create: streamAdminProcedure
-    .input(
-      z.object({
-        title: z.string(),
-        content: z.string(),
-      })
-    )
+    .input(createPostSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.streamPost.create({
         data: {
           streamId: input.streamId,
           authorId: ctx.user.id,
           content: input.content,
+          title: input.title,
         },
       });
     }),

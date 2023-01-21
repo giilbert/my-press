@@ -14,9 +14,12 @@ export const StreamProvider: React.FC<{
     | React.ReactElement;
 }> = ({ children }) => {
   const router = useRouter();
-  const streamQuery = trpc.stream.getStreamBySlug.useQuery({
-    slug: router.query.slug as string,
-  });
+  const streamQuery = trpc.stream.getStreamBySlug.useQuery(
+    {
+      slug: router.query.slug as string,
+    },
+    { enabled: !!router.query.slug, refetchOnWindowFocus: false }
+  );
 
   return (
     <StreamContext.Provider value={streamQuery.data || null}>

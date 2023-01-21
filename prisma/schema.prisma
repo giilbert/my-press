@@ -18,7 +18,8 @@ model Stream {
 
 model StreamPost {
   id       String @id @default(cuid())
-  content  String @db.MediumText
+  title    String
+  content  String @db.Text
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])

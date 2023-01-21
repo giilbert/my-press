@@ -1,5 +1,6 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
+import { CreatePost } from "../../components/posts/create-post";
 import { StreamProvider } from "../../components/streams/stream-provider";
 
 const StreamPage: NextPage = () => {
@@ -9,6 +10,7 @@ const StreamPage: NextPage = () => {
         <Box p="4">
           <Heading>Stream name: {data.name}</Heading>
           <Text>Your permission: {data.permission}</Text>
+          <CreatePost />
         </Box>
       )}
     </StreamProvider>
