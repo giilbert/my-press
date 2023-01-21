@@ -66,6 +66,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { z } from "zod";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -123,3 +124,33 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const streamAdminProcedure = t.procedure
+  .input(z.object({ streamId: z.string() }))
+  .use(enforceUserIsAuthed)
+  .use(async ({ ctx, next, input }) => {
+    const member = await ctx.prisma.streamMember.findUnique({
+      where: {
+        userId_streamId: {
+          userId: ctx.user.id,
+          streamId: input.streamId,
+        },
+      },
+    });
+
+    if (!member)
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not in this stream.",
+      });
+
+    if (member.permission === "MEMBER")
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You must be an admin or the owner to make posts.",
+      });
+
+    return next({
+      ctx,
+    });
+  });
