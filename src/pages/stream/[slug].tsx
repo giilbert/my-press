@@ -18,7 +18,7 @@ const StreamPage: NextPage = () => {
           <Box p="4">
             <Heading>Stream name: {data.name}</Heading>
             <Text>Your permission: {data.permission}</Text>
-            <CreatePost />
+            {data.permission !== "MEMBER" && <CreatePost />}
 
             <StreamPostList />
           </Box>
