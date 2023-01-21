@@ -56,6 +56,9 @@ model StreamPostOnUser {
   user User       @relation(fields: [userId], references: [id])
   post StreamPost @relation(fields: [postId], references: [id])
 
+  completed Boolean @default(false)
+  notes     String  @default("")
+
   @@unique([userId, postId])
   @@index([postId])
 }

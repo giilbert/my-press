@@ -127,7 +127,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 // TODO: test?
-const enforceStreamMember = async (
+export const enforceStreamMember = async (
   prisma: PrismaClient,
   userId: string,
   streamId: string

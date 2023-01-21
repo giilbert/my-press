@@ -1,6 +1,7 @@
 import { Box, Heading, Text, VStack } from "@chakra-ui/react";
 import { trpc } from "../../utils/api";
 import { useStream } from "../streams/stream-provider";
+import { PostCard } from "./post-card";
 
 export const StreamPostList: React.FC = () => {
   const stream = useStream();
@@ -18,17 +19,7 @@ export const StreamPostList: React.FC = () => {
   return (
     <VStack w="full">
       {posts?.map((post) => (
-        <Box
-          border="solid #aaa 1px"
-          mt="2"
-          p="4"
-          w="full"
-          borderRadius="sm"
-          key={post.id}
-        >
-          <Heading fontSize="xl">{post.title}</Heading>
-          <Text fontSize="md">{post.content}</Text>
-        </Box>
+        <PostCard key={post.id} post={post} />
       ))}
     </VStack>
   );
