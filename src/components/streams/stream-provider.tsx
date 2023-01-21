@@ -1,6 +1,6 @@
 import { Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { createContext, useContext } from "react";
+import React, { createContext, useContext } from "react";
 import { type RouterOutputs, trpc } from "../../utils/api";
 import { DefaultQueryCell } from "../utils/default-query-cell";
 
@@ -8,11 +8,9 @@ type StreamData = RouterOutputs["stream"]["getStreamBySlug"];
 
 const StreamContext = createContext<StreamData | null>(null);
 
-export const StreamProvider: React.FC<{
-  children:
-    | ((data: StreamData) => React.ReactElement | null)
-    | React.ReactElement;
-}> = ({ children }) => {
+export const StreamProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const router = useRouter();
   const streamQuery = trpc.stream.getStreamBySlug.useQuery(
     {
@@ -22,15 +20,13 @@ export const StreamProvider: React.FC<{
   );
 
   return (
-    <StreamContext.Provider value={streamQuery.data || null}>
-      <DefaultQueryCell
-        query={streamQuery}
-        success={({ data }) =>
-          typeof children === "function" ? children(data) : children
-        }
-        empty={() => <Text>Empty</Text>}
-      />
-    </StreamContext.Provider>
+    <DefaultQueryCell
+      query={streamQuery}
+      success={({ data }) => (
+        <StreamContext.Provider value={data}>{children}</StreamContext.Provider>
+      )}
+      empty={() => <Text>Empty</Text>}
+    />
   );
 };
 

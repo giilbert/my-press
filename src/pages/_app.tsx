@@ -1,20 +1,39 @@
-import { type AppType } from "next/app";
-import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import type { AppProps } from "next/app";
 
 import { trpc } from "../utils/api";
 
-import "../styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import { Auth } from "../components/utils/auth";
+import "../styles/globals.css";
+import type { CustomNextPage } from "../types/next-page";
 
-const MyApp: AppType<{ session: Session | null }> = ({
+type CustomComponent = {
+  Component: CustomNextPage;
+};
+
+type CustomAppProps = AppProps & CustomComponent;
+
+const AppInner = ({
   Component,
-  pageProps: { session, ...pageProps },
-}) => {
+  ...props
+}: CustomComponent & { children: React.PropsWithChildren["children"] }) => {
+  const getLayout = Component.getLayout ?? ((page) => page);
+
+  if (Component.auth) {
+    return <Auth>{getLayout(<>{props.children}</>)}</Auth>;
+  }
+
+  return getLayout(<>{props.children}</>);
+};
+
+const MyApp = ({ Component, pageProps: { ...pageProps } }: CustomAppProps) => {
   return (
     <ChakraProvider>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
+      <SessionProvider>
+        <AppInner Component={Component}>
+          <Component {...pageProps} />
+        </AppInner>
       </SessionProvider>
     </ChakraProvider>
   );

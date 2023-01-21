@@ -1,50 +1,56 @@
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
-import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { CreatePost } from "../../components/posts/create-post";
 import { StreamPostList } from "../../components/posts/stream-list";
-import { StreamProvider } from "../../components/streams/stream-provider";
+import {
+  StreamProvider,
+  useStream,
+} from "../../components/streams/stream-provider";
+import type { CustomNextPage } from "../../types/next-page";
 import { trpc } from "../../utils/api";
 import { noop } from "../../utils/noop";
 
-const StreamPage: NextPage = () => {
+const StreamPage: CustomNextPage = () => {
   const subscribeToStream = trpc.stream.subscribe.useMutation();
   const router = useRouter();
+  const stream = useStream();
+
+  if (stream.permission) {
+    return (
+      <Box p="4">
+        <Heading>Stream name: {stream.name}</Heading>
+        <Text>Your permission: {stream.permission}</Text>
+        {stream.permission !== "MEMBER" && <CreatePost />}
+
+        <StreamPostList />
+      </Box>
+    );
+  }
 
   return (
-    <StreamProvider>
-      {(data) =>
-        data.permission ? (
-          <Box p="4">
-            <Heading>Stream name: {data.name}</Heading>
-            <Text>Your permission: {data.permission}</Text>
-            {data.permission !== "MEMBER" && <CreatePost />}
+    <Box>
+      <Text>Subscribe to this stream to view the posts.</Text>
 
-            <StreamPostList />
-          </Box>
-        ) : (
-          <Box>
-            <Text>Subscribe to this stream to view the posts.</Text>
-
-            <Button
-              onClick={() => {
-                subscribeToStream
-                  .mutateAsync({
-                    slug: data.slug,
-                  })
-                  .then(() => {
-                    router.reload();
-                  })
-                  .catch(noop);
-              }}
-            >
-              Subscribe
-            </Button>
-          </Box>
-        )
-      }
-    </StreamProvider>
+      <Button
+        onClick={() => {
+          subscribeToStream
+            .mutateAsync({
+              slug: stream.slug,
+            })
+            .then(() => {
+              router.reload();
+            })
+            .catch(noop);
+        }}
+      >
+        Subscribe
+      </Button>
+    </Box>
   );
 };
+
+StreamPage.auth = true;
+
+StreamPage.getLayout = (page) => <StreamProvider>{page}</StreamProvider>;
 
 export default StreamPage;

@@ -1,37 +1,33 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Text, Center, Heading, Stack, Button } from "@chakra-ui/react";
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { AllPostList } from "../components/posts/all-list";
-import { CreateStream } from "../components/streams/create-stream";
-import { trpc } from "../utils/api";
+import { FaGoogle } from "react-icons/fa";
 
 const Home: NextPage = () => {
-  const joinedStreamQuery = trpc.stream.getJoinedStreams.useQuery();
-  const { data: session } = useSession();
+  const session = useSession();
 
   return (
-    <Box p="4">
-      {session ? (
-        <Button onClick={() => void signOut()}>Sign out</Button>
-      ) : (
-        <Button onClick={() => void signIn("google")}>Sign in</Button>
-      )}
-      <CreateStream />
+    <Center h="100vh">
+      <Stack spacing={2}>
+        <Heading fontWeight="semibold" fontSize="xx-large">
+          MyPress
+        </Heading>
+        <Text fontWeight="medium" fontSize="large">
+          The information that matters to you. All in one place.
+        </Text>
 
-      <Heading mt="2">All the things</Heading>
-      <AllPostList />
+        {session.status === "unauthenticated" && (
+          <Button leftIcon={<FaGoogle />}>Continue with Google</Button>
+        )}
 
-      <Heading mt="2">Your subscriptions</Heading>
-      {joinedStreamQuery.data?.map((stream) => (
-        <Link key={stream.id} href={`/stream/${stream.slug}`}>
-          <Box border="solid #aaa 1px" mt="2" p="2" borderRadius="sm">
-            <Text>HELLO DESIGN ME</Text>
-            <Text>Name: {stream.name}</Text>
-          </Box>
-        </Link>
-      ))}
-    </Box>
+        {session.status === "authenticated" && (
+          <Button as={Link} href="/dashboard">
+            Go to Dashboard
+          </Button>
+        )}
+      </Stack>
+    </Center>
   );
 };
 
