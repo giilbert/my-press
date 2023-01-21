@@ -2,7 +2,11 @@ import { Permission } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createStreamSchema } from "../../../shared/schemas/stream";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  streamMemberProcedure,
+} from "../trpc";
 
 export const streamRouter = createTRPCRouter({
   getStreamBySlug: protectedProcedure
@@ -74,4 +78,45 @@ export const streamRouter = createTRPCRouter({
         },
       });
     }),
+
+  subscribe: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.streamMember.create({
+        data: {
+          permission: Permission.MEMBER,
+          user: {
+            connect: {
+              id: ctx.user.id,
+            },
+          },
+          stream: {
+            connect: {
+              slug: input.slug,
+            },
+          },
+        },
+      });
+    }),
+
+  unsubscribe: streamMemberProcedure.mutation(async ({ ctx, input }) => {
+    if (ctx.member.permission !== "MEMBER")
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Only members can unsubscribe.",
+      });
+
+    await ctx.prisma.streamMember.delete({
+      where: {
+        userId_streamId: {
+          userId: ctx.user.id,
+          streamId: input.streamId,
+        },
+      },
+    });
+  }),
 });
