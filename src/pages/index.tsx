@@ -1,4 +1,4 @@
-import { Box, Card, CardBody, CardHeader, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { type NextPage } from "next";
 import Link from "next/link";
 import { CreateStream } from "../components/streams/create-stream";
