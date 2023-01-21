@@ -1,5 +1,6 @@
 import { Permission } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 import { createStreamSchema } from "../../../shared/schemas/stream";
 import {
@@ -27,17 +28,34 @@ export const streamRouter = createTRPCRouter({
           stream: true,
         },
       });
+      const stream = await ctx.prisma.stream.findUnique({
+        where: {
+          slug: input.slug,
+        },
+      });
 
-      if (!streamMember)
+      if (streamMember)
+        return {
+          ...streamMember.stream,
+          permission: streamMember.permission,
+        };
+
+      if (!stream)
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Stream not found.",
         });
 
-      return {
-        ...streamMember.stream,
-        permission: streamMember.permission,
-      };
+      if (!stream?.private)
+        return {
+          ...stream,
+          permission: null,
+        };
+
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You're not a subscriber of this stream.",
+      });
     }),
 
   getJoinedStreams: protectedProcedure.query(async ({ ctx }) => {
@@ -65,10 +83,13 @@ export const streamRouter = createTRPCRouter({
           message: "A stream with that slug already exists.",
         });
 
+      // TODO: invite only streams
       await ctx.prisma.stream.create({
         data: {
           name: input.name,
           slug: input.slug,
+          private: false,
+          joinCode: nanoid(),
           members: {
             create: {
               userId: ctx.user.id,

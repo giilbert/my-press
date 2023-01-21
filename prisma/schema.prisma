@@ -9,11 +9,13 @@ datasource db {
 }
 
 model Stream {
-  id      String         @id @default(cuid())
-  slug    String         @unique
-  name    String
-  posts   StreamPost[]
-  members StreamMember[]
+  id       String         @id @default(cuid())
+  slug     String         @unique
+  name     String
+  private  Boolean
+  joinCode String
+  posts    StreamPost[]
+  members  StreamMember[]
 }
 
 model StreamPost {
