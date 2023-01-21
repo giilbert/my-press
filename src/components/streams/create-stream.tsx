@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/router";
 import { createStreamSchema } from "../../shared/schemas/stream";
 import { noop } from "../../utils/noop";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../utils/api";
 import { TsForm } from "../forms/ts-form";
 
 export const CreateStream: React.FC = () => {

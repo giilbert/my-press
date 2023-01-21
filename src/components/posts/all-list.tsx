@@ -1,5 +1,5 @@
 import { Box, Heading, Text, VStack } from "@chakra-ui/react";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../utils/api";
 
 export const AllPostList: React.FC = () => {
   const postsQuery = trpc.post.listAll.useInfiniteQuery(

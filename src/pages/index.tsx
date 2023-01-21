@@ -3,7 +3,7 @@ import { type NextPage } from "next";
 import Link from "next/link";
 import { AllPostList } from "../components/posts/all-list";
 import { CreateStream } from "../components/streams/create-stream";
-import { trpc } from "../utils/trpc";
+import { trpc } from "../utils/api";
 
 const Home: NextPage = () => {
   const joinedStreamQuery = trpc.stream.getJoinedStreams.useQuery();

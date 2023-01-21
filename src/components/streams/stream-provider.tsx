@@ -1,7 +1,7 @@
 import { Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { createContext, useContext } from "react";
-import { type RouterOutputs, trpc } from "../../utils/trpc";
+import { type RouterOutputs, trpc } from "../../utils/api";
 import { DefaultQueryCell } from "../utils/default-query-cell";
 
 type StreamData = RouterOutputs["stream"]["getStreamBySlug"];

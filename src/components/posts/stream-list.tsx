@@ -1,5 +1,5 @@
 import { Box, Heading, Text, VStack } from "@chakra-ui/react";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../utils/api";
 import { useStream } from "../streams/stream-provider";
 
 export const StreamPostList: React.FC = () => {

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { type z } from "zod";
 import { createPostSchema } from "../../shared/schemas/post";
 import { noop } from "../../utils/noop";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../utils/api";
 import { TsForm } from "../forms/ts-form";
 import { useStream } from "../streams/stream-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
