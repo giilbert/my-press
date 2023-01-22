@@ -7,7 +7,7 @@ import {
   Text,
   HStack,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -106,7 +106,12 @@ const Sidebar: React.FC<Props> = (props) => {
 
       <HStack w="full" mt="4">
         <Text fontWeight="bold">{session.data?.user?.name}</Text>
-        <Button size="sm" ml="auto !important" bgColor="red.500">
+        <Button
+          size="sm"
+          ml="auto !important"
+          bgColor="red.500"
+          onClick={() => void signOut()}
+        >
           Sign out
         </Button>
       </HStack>
