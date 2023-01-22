@@ -13,7 +13,7 @@ interface TextInputProps {
   autoComplete?: string;
 }
 
-// if you put React.FC here it breaks
+// if you put React.FC here it breaksa
 export const TextInput = ({
   label,
   description,
