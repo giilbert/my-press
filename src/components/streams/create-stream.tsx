@@ -19,11 +19,12 @@ import { TsForm } from "../forms/ts-form";
 export const CreateStream: React.FC = () => {
   const router = useRouter();
   const createStream = trpc.stream.create.useMutation();
-  const modalDisclosure = useDisclosure();
+  const ctx = trpc.useContext();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
-      <Modal {...modalDisclosure}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
 
         <ModalContent>
@@ -43,6 +44,10 @@ export const CreateStream: React.FC = () => {
                     .then(async () => {
                       await router.push(`/stream/${data.slug}`);
                     })
+                    .then(() => {
+                      void ctx.stream.getJoinedStreams.invalidate();
+                    })
+                    .then(onClose)
                     .catch(noop);
                 }}
                 schema={createStreamSchema}
@@ -67,7 +72,9 @@ export const CreateStream: React.FC = () => {
         </ModalContent>
       </Modal>
 
-      <Button onClick={modalDisclosure.onOpen}>Create Stream</Button>
+      <Button onClick={onOpen} size="sm">
+        Create Stream
+      </Button>
     </>
   );
 };

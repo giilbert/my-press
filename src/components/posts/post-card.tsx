@@ -1,10 +1,29 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
-import type { StreamPost, StreamPostOnUser } from "@prisma/client";
+import {
+  Avatar,
+  Box,
+  Button,
+  Checkbox,
+  Flex,
+  Heading,
+  HStack,
+  Stack,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
+import type {
+  Stream,
+  StreamPost,
+  StreamPostOnUser,
+  User,
+} from "@prisma/client";
+import moment from "moment";
 import { trpc } from "../../utils/api";
 
 export const PostCard: React.FC<{
   post: StreamPost & {
     userStatus: StreamPostOnUser[];
+    author: User;
+    stream: { name: string };
   };
 }> = ({ post }) => {
   const trpcContext = trpc.useContext();
@@ -14,54 +33,46 @@ export const PostCard: React.FC<{
   const isCompleted = status?.completed || false;
 
   return (
-    <Box
-      border="solid #aaa 1px"
-      mt="2"
-      p="4"
+    <Flex
       w="full"
-      borderRadius="sm"
       key={post.id}
+      p={4}
+      justifyContent="space-between"
+      borderBottom="solid 1px"
+      borderBottomColor="gray.600"
     >
-      {isCompleted ? (
-        <>
-          <Text>DOne!!!</Text>
-          <Button
-            onClick={() => {
-              updateStatus
-                .mutateAsync({
-                  completed: false,
-                  notes: status?.notes || "",
-                  postId: post.id,
-                })
-                .then(() => {
-                  trpcContext.post.invalidate();
-                });
-            }}
-            isLoading={updateStatus.isLoading}
-          >
-            Mark as not done
-          </Button>
-        </>
-      ) : (
-        <Button
-          onClick={() => {
-            updateStatus
+      <HStack alignItems="center" display="flex">
+        <Checkbox
+          defaultChecked={isCompleted}
+          onChange={(e) => {
+            void updateStatus
               .mutateAsync({
-                completed: true,
+                completed: e.target.checked,
                 notes: status?.notes || "",
                 postId: post.id,
               })
               .then(() => {
-                trpcContext.post.invalidate();
+                void trpcContext.post.invalidate();
               });
           }}
-          isLoading={updateStatus.isLoading}
-        >
-          Mark as done
-        </Button>
-      )}
-      <Heading fontSize="xl">{post.title}</Heading>
-      <Text fontSize="md">{post.content}</Text>
-    </Box>
+        />
+        <Stack spacing="3rem">
+          <Heading fontWeight="medium" fontSize="large">
+            {post.title}
+          </Heading>
+        </Stack>
+      </HStack>
+      <HStack>
+        <Tag>{post.stream.name}</Tag>
+        {post.dueDate && (
+          <Text color="gray.300">{moment(post.dueDate).format("MMM DD")}</Text>
+        )}
+        <Avatar
+          src={post.author.image || undefined}
+          name={post.author.name || undefined}
+          size="xs"
+        />
+      </HStack>
+    </Flex>
   );
 };

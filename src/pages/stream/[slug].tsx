@@ -1,4 +1,17 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { CreatePost } from "../../components/posts/create-post";
 import { StreamPostList } from "../../components/posts/stream-list";
@@ -6,6 +19,8 @@ import {
   StreamProvider,
   useStream,
 } from "../../components/streams/stream-provider";
+import { StreamShell } from "../../components/streams/stream-shell";
+import { Title } from "../../components/utils/title";
 import type { CustomNextPage } from "../../types/next-page";
 import { trpc } from "../../utils/api";
 import { noop } from "../../utils/noop";
@@ -14,13 +29,25 @@ const StreamPage: CustomNextPage = () => {
   const subscribeToStream = trpc.stream.subscribe.useMutation();
   const router = useRouter();
   const stream = useStream();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   if (stream.permission) {
     return (
-      <Box p="4">
-        <Heading>Stream name: {stream.name}</Heading>
-        <Text>Your permission: {stream.permission}</Text>
-        {stream.permission !== "MEMBER" && <CreatePost />}
+      <Box w="full">
+        <Title title={stream.name} />
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Create Post</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <CreatePost onClose={onClose} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+        {stream.permission !== "MEMBER" && (
+          <Button onClick={onOpen}>Create Post</Button>
+        )}
 
         <StreamPostList />
       </Box>
@@ -51,6 +78,6 @@ const StreamPage: CustomNextPage = () => {
 
 StreamPage.auth = true;
 
-StreamPage.getLayout = (page) => <StreamProvider>{page}</StreamProvider>;
+StreamPage.getLayout = (page) => <StreamShell>{page}</StreamShell>;
 
 export default StreamPage;

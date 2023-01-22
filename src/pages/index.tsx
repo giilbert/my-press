@@ -1,6 +1,6 @@
 import { Text, Center, Heading, Stack, Button } from "@chakra-ui/react";
 import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
 
@@ -18,7 +18,14 @@ const Home: NextPage = () => {
         </Text>
 
         {session.status === "unauthenticated" && (
-          <Button leftIcon={<FaGoogle />}>Continue with Google</Button>
+          <Button
+            leftIcon={<FaGoogle />}
+            onClick={() => {
+              void signIn("google");
+            }}
+          >
+            Continue with Google
+          </Button>
         )}
 
         {session.status === "authenticated" && (

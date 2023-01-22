@@ -59,10 +59,17 @@ export const streamRouter = createTRPCRouter({
     }),
 
   getJoinedStreams: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.stream.findMany({
+    return ctx.prisma.stream.findMany({
       where: {
         members: {
           some: {
+            userId: ctx.user.id,
+          },
+        },
+      },
+      include: {
+        members: {
+          where: {
             userId: ctx.user.id,
           },
         },

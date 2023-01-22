@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -19,9 +19,10 @@ model Stream {
 }
 
 model StreamPost {
-  id       String @id @default(cuid())
-  title    String
-  content  String @db.Text
+  id      String    @id @default(cuid())
+  title   String
+  content String    @db.Text
+  dueDate DateTime?
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
@@ -40,8 +41,8 @@ model StreamMember {
   streamId   String
   permission Permission
 
-  user     User   @relation(fields: [userId], references: [id])
-  stream   Stream @relation(fields: [streamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  stream Stream @relation(fields: [streamId], references: [id])
 
   @@id([userId, streamId])
   @@index([userId])
@@ -50,7 +51,7 @@ model StreamMember {
 
 // Allows user to mark a post as "Complete" or add notes to a post
 model StreamPostOnUser {
-  userId       String
+  userId String
   postId String
 
   user User       @relation(fields: [userId], references: [id])
@@ -84,8 +85,8 @@ model Account {
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -111,4 +112,3 @@ model User {
   streams  StreamMember[]
   statuses StreamPostOnUser[]
 }
-

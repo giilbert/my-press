@@ -20,6 +20,7 @@ export const postRouter = createTRPCRouter({
           authorId: ctx.user.id,
           content: input.content,
           title: input.title,
+          dueDate: input.dueDate,
         },
       });
     }),
@@ -42,54 +43,10 @@ export const postRouter = createTRPCRouter({
               userId: ctx.user.id,
             },
           },
-        },
-        cursor: input.cursor
-          ? {
-              id: input.cursor,
-            }
-          : undefined,
-        take: TAKE + 1,
-      });
-
-      let nextCursor: string | undefined = undefined;
-      if (posts.length > TAKE) {
-        const nextItem = posts.pop();
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        nextCursor = nextItem!.id;
-      }
-
-      return {
-        posts,
-        nextCursor,
-      };
-    }),
-
-  listAll: protectedProcedure
-    .input(
-      z.object({
-        cursor: z.string().optional(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const TAKE = 25;
-
-      const posts = await ctx.prisma.streamPost.findMany({
-        // probably slow dooo doo doo doooo..
-        where: {
+          author: true,
           stream: {
-            members: {
-              some: {
-                userId: ctx.user.id,
-                permission: Permission.MEMBER,
-              },
-            },
-          },
-        },
-        include: {
-          // metadata about completion, notes, etc..
-          userStatus: {
-            where: {
-              userId: ctx.user.id,
+            select: {
+              name: true,
             },
           },
         },
@@ -113,6 +70,36 @@ export const postRouter = createTRPCRouter({
         nextCursor,
       };
     }),
+
+  listAll: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.streamPost.findMany({
+      // probably slow dooo doo doo doooo..
+      where: {
+        stream: {
+          members: {
+            some: {
+              userId: ctx.user.id,
+              permission: Permission.MEMBER,
+            },
+          },
+        },
+      },
+      include: {
+        // metadata about completion, notes, etc..
+        userStatus: {
+          where: {
+            userId: ctx.user.id,
+          },
+        },
+        author: true,
+        stream: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }),
 
   updateStatus: protectedProcedure
     .input(

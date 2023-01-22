@@ -3,10 +3,10 @@ import type { AppProps } from "next/app";
 
 import { trpc } from "../utils/api";
 
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Auth } from "../components/utils/auth";
-import "../styles/globals.css";
 import type { CustomNextPage } from "../types/next-page";
+import { useEffect } from "react";
 
 type CustomComponent = {
   Component: CustomNextPage;
@@ -27,9 +27,17 @@ const AppInner = ({
   return getLayout(<>{props.children}</>);
 };
 
+export const theme = extendTheme({
+  initialColorMode: "dark",
+});
+
 const MyApp = ({ Component, pageProps: { ...pageProps } }: CustomAppProps) => {
+  useEffect(() => {
+    localStorage.setItem("chakra-ui-color-mode", "dark");
+  }, []);
+
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <SessionProvider>
         <AppInner Component={Component}>
           <Component {...pageProps} />
