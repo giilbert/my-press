@@ -26,9 +26,10 @@ import { trpc } from "../../utils/api";
 import { useIsMobile } from "../../utils/use-is-mobile";
 import { DefaultQueryCell } from "../utils/default-query-cell";
 import { CreateStream } from "./create-stream";
-import { StreamProvider } from "./stream-provider";
+import { StreamProvider, useStream } from "./stream-provider";
 import { FiMenu } from "react-icons/fi";
 import { signOut } from "next-auth/react";
+import Head from "next/head";
 
 interface Props {
   viewingAll?: boolean;
@@ -162,6 +163,16 @@ export const ShellSidebarDrawer: React.FC<Props> = (props) => {
   );
 };
 
+const StreamHead: React.FC = () => {
+  const stream = useStream();
+
+  return (
+    <Head>
+      <title>{stream.name} | MyPress</title>
+    </Head>
+  );
+};
+
 export const StreamShell: React.FC<React.PropsWithChildren<Props>> = (
   props
 ) => {
@@ -176,7 +187,14 @@ export const StreamShell: React.FC<React.PropsWithChildren<Props>> = (
       )}
       <Flex w="full" overflow="auto">
         {props.viewingAll && props.children}
-        {!props.viewingAll && <StreamProvider>{props.children}</StreamProvider>}
+        {!props.viewingAll && (
+          <StreamProvider>
+            <>
+              <StreamHead />
+              {props.children}
+            </>
+          </StreamProvider>
+        )}
       </Flex>
     </Flex>
   );

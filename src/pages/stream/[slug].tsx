@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   HStack,
@@ -41,8 +42,6 @@ const StreamPage: CustomNextPage = () => {
   if (stream.permission) {
     return (
       <Box w="full">
-        <Title title={stream.name} />
-
         <Flex
           p={4}
           w="full"
@@ -96,24 +95,28 @@ const StreamPage: CustomNextPage = () => {
   }
 
   return (
-    <Box>
-      <Text>Subscribe to this stream to view the posts.</Text>
+    <Center w="full">
+      <Flex flexDir="column" gap="2">
+        <Text fontSize="x-large" fontWeight="medium">
+          Subscribe to this stream to view the posts.
+        </Text>
 
-      <Button
-        onClick={() => {
-          subscribeToStream
-            .mutateAsync({
-              slug: stream.slug,
-            })
-            .then(() => {
-              router.reload();
-            })
-            .catch(noop);
-        }}
-      >
-        Subscribe
-      </Button>
-    </Box>
+        <Button
+          onClick={() => {
+            subscribeToStream
+              .mutateAsync({
+                slug: stream.slug,
+              })
+              .then(() => {
+                router.reload();
+              })
+              .catch(noop);
+          }}
+        >
+          Subscribe
+        </Button>
+      </Flex>
+    </Center>
   );
 };
 
