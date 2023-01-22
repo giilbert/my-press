@@ -46,7 +46,9 @@ const StreamPage: CustomNextPage = () => {
           </ModalContent>
         </Modal>
         {stream.permission !== "MEMBER" && (
-          <Button onClick={onOpen}>Create Post</Button>
+          <Button onClick={onOpen} mt="2" ml="2">
+            Create Post
+          </Button>
         )}
 
         <StreamPostList />

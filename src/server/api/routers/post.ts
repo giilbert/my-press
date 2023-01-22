@@ -56,6 +56,9 @@ export const postRouter = createTRPCRouter({
             }
           : undefined,
         take: TAKE + 1,
+        orderBy: {
+          dueDate: "desc",
+        },
       });
 
       let nextCursor: string | undefined = undefined;
@@ -97,6 +100,9 @@ export const postRouter = createTRPCRouter({
             name: true,
           },
         },
+      },
+      orderBy: {
+        dueDate: "desc",
       },
     });
   }),

@@ -40,10 +40,13 @@ export const PostCard: React.FC<{
       justifyContent="space-between"
       borderBottom="solid 1px"
       borderBottomColor="gray.600"
+      bg={isCompleted ? "blackAlpha.400" : "unset"}
     >
       <HStack alignItems="center" display="flex">
         <Checkbox
           defaultChecked={isCompleted}
+          ml="2"
+          mr="4"
           onChange={(e) => {
             void updateStatus
               .mutateAsync({
@@ -56,16 +59,23 @@ export const PostCard: React.FC<{
               });
           }}
         />
-        <Stack spacing="3rem">
-          <Heading fontWeight="medium" fontSize="large">
+        <Stack>
+          <Heading
+            fontWeight="medium"
+            fontSize="xl"
+            textDecoration={isCompleted ? "line-through" : "unset"}
+          >
             {post.title}
           </Heading>
+          <Text>{post.content}</Text>
         </Stack>
       </HStack>
       <HStack>
         <Tag>{post.stream.name}</Tag>
         {post.dueDate && (
-          <Text color="gray.300">{moment(post.dueDate).format("MMM DD")}</Text>
+          <Text color="gray.400">
+            {moment(post.dueDate).format("MM/DD/YYYY")}
+          </Text>
         )}
         <Avatar
           src={post.author.image || undefined}

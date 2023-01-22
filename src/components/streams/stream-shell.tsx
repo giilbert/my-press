@@ -17,7 +17,7 @@ const Sidebar: React.FC<Props> = (props) => {
 
   return (
     <Box borderRight="solid 1px" borderRightColor="gray.600" h="100vh" p="4">
-      <Stack maxW="15rem">
+      <Stack w="15rem">
         <CreateStream />
         <Button
           size="sm"
