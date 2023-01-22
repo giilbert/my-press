@@ -11,7 +11,9 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  HStack,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { CreatePost } from "../../components/posts/create-post";
 import { StreamPostList } from "../../components/posts/stream-list";
@@ -46,9 +48,17 @@ const StreamPage: CustomNextPage = () => {
           </ModalContent>
         </Modal>
         {stream.permission !== "MEMBER" && (
-          <Button onClick={onOpen} mt="2" ml="2">
-            Create Post
-          </Button>
+          <HStack m="2">
+            <Button onClick={onOpen} mr="4">
+              Create Post
+            </Button>
+            <Text>Invite:</Text>
+            <Link href={window.location.href}>
+              <Text textDecoration="underline" fontSize="lg">
+                {window.location.href}
+              </Text>
+            </Link>
+          </HStack>
         )}
 
         <StreamPostList />

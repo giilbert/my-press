@@ -1,7 +1,5 @@
 import {
   Avatar,
-  Box,
-  Button,
   Checkbox,
   Flex,
   Heading,
@@ -10,12 +8,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import type {
-  Stream,
-  StreamPost,
-  StreamPostOnUser,
-  User,
-} from "@prisma/client";
+import type { StreamPost, StreamPostOnUser, User } from "@prisma/client";
 import moment from "moment";
 import { trpc } from "../../utils/api";
 
