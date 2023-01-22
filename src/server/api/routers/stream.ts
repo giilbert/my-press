@@ -6,6 +6,7 @@ import { createStreamSchema } from "../../../shared/schemas/stream";
 import {
   createTRPCRouter,
   protectedProcedure,
+  streamAdminProcedure,
   streamMemberProcedure,
 } from "../trpc";
 
@@ -106,6 +107,12 @@ export const streamRouter = createTRPCRouter({
         },
       });
     }),
+
+  delete: streamAdminProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.stream.delete({
+      where: { id: ctx.member.streamId },
+    });
+  }),
 
   subscribe: protectedProcedure
     .input(

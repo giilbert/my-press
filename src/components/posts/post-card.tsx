@@ -1,7 +1,5 @@
 import {
   Avatar,
-  Box,
-  Button,
   Checkbox,
   Flex,
   Heading,
@@ -10,12 +8,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import type {
-  Stream,
-  StreamPost,
-  StreamPostOnUser,
-  User,
-} from "@prisma/client";
+import type { StreamPost, StreamPostOnUser, User } from "@prisma/client";
 import moment from "moment";
 import { trpc } from "../../utils/api";
 
@@ -63,9 +56,11 @@ export const PostCard: React.FC<{
         </Stack>
       </HStack>
       <HStack>
-        <Tag>{post.stream.name}</Tag>
+        <Tag colorScheme="purple">{post.stream.name}</Tag>
         {post.dueDate && (
-          <Text color="gray.300">{moment(post.dueDate).format("MMM DD")}</Text>
+          <Text color="gray.300">
+            {moment(post.dueDate).format("MMM DD YYYY")}
+          </Text>
         )}
         <Avatar
           src={post.author.image || undefined}

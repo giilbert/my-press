@@ -21,7 +21,7 @@ const Home: NextPage = () => {
           <Button
             leftIcon={<FaGoogle />}
             onClick={() => {
-              void signIn("google");
+              void signIn("google", { callbackUrl: "/dashboard" });
             }}
           >
             Continue with Google

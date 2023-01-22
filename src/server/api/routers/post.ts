@@ -25,51 +25,28 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  listOfStream: streamMemberProcedure
-    .input(
-      z.object({
-        cursor: z.string().optional(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const TAKE = 25;
-
-      const posts = await ctx.prisma.streamPost.findMany({
-        where: { streamId: input.streamId },
-        include: {
-          // metadata about completion, notes, etc..
-          userStatus: {
-            where: {
-              userId: ctx.user.id,
-            },
-          },
-          author: true,
-          stream: {
-            select: {
-              name: true,
-            },
+  listOfStream: streamMemberProcedure.query(async ({ ctx, input }) => {
+    return ctx.prisma.streamPost.findMany({
+      where: { streamId: input.streamId },
+      include: {
+        // metadata about completion, notes, etc..
+        userStatus: {
+          where: {
+            userId: ctx.user.id,
           },
         },
-        cursor: input.cursor
-          ? {
-              id: input.cursor,
-            }
-          : undefined,
-        take: TAKE + 1,
-      });
-
-      let nextCursor: string | undefined = undefined;
-      if (posts.length > TAKE) {
-        const nextItem = posts.pop();
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        nextCursor = nextItem!.id;
-      }
-
-      return {
-        posts,
-        nextCursor,
-      };
-    }),
+        author: true,
+        stream: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        dueDate: "asc",
+      },
+    });
+  }),
 
   listAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.streamPost.findMany({
@@ -97,6 +74,9 @@ export const postRouter = createTRPCRouter({
             name: true,
           },
         },
+      },
+      orderBy: {
+        dueDate: "asc",
       },
     });
   }),

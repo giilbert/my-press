@@ -15,6 +15,7 @@ import { createStreamSchema } from "../../shared/schemas/stream";
 import { noop } from "../../utils/noop";
 import { trpc } from "../../utils/api";
 import { TsForm } from "../forms/ts-form";
+import { FaPlus } from "react-icons/fa";
 
 export const CreateStream: React.FC = () => {
   const router = useRouter();
@@ -72,7 +73,7 @@ export const CreateStream: React.FC = () => {
         </ModalContent>
       </Modal>
 
-      <Button onClick={onOpen} size="sm">
+      <Button onClick={onOpen} size="sm" leftIcon={<FaPlus />}>
         Create Stream
       </Button>
     </>
