@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Stack, Divider, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Stack,
+  Divider,
+  Text,
+  HStack,
+} from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -14,6 +23,7 @@ interface Props {
 const Sidebar: React.FC<Props> = (props) => {
   const streams = trpc.stream.getJoinedStreams.useQuery();
   const router = useRouter();
+  const session = useSession({ required: true });
 
   return (
     <Box borderRight="solid 1px" borderRightColor="gray.600" h="100vh" p="4">
@@ -87,6 +97,19 @@ const Sidebar: React.FC<Props> = (props) => {
           )}
         />
       </Stack>
+
+      <hr
+        style={{
+          marginTop: "2rem",
+        }}
+      />
+
+      <HStack w="full" mt="4">
+        <Text fontWeight="bold">{session.data?.user?.name}</Text>
+        <Button size="sm" ml="auto !important" bgColor="red.500">
+          Sign out
+        </Button>
+      </HStack>
     </Box>
   );
 };
